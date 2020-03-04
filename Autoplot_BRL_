@@ -1,0 +1,59 @@
+library(quantmod)
+library(ggplot2)
+library(scales)
+library(forecast)
+library(readr)
+library(xts)
+#install.packages("gridExtra")
+library(gridExtra)
+#install.packages("tidyverse")
+library(tidyverse)
+
+#yahoo finance data
+#pegando dados do yahoo finance
+#brl
+getSymbols("BRL=X", srch="yahoo", from = '2019-06-02')
+#bovespa
+getSymbols("^BVSP", src= "yahoo", from= '2019-06-02')
+#oleo exxonmobil
+getSymbols("XOM", srch = "yahoo", from = '2019-06-02')
+
+cambio = `BRL=X`[,4]
+bovespa = BVSP[,4]
+exon = XOM[,4]
+
+#datavisualization
+
+g1 = autoplot(cambio)+
+  scale_x_date(breaks = date_breaks("15 days"),
+               labels = date_format("%d%b"))+
+  theme(axis.text.x= element_text(angle = 45, hjust = 1),
+        plot.title = element_text(size = 10))+
+  labs(x='', y='R$/US$ diária',
+       title = 'Taxa de câmbio R$/US$ diária')
+
+g1
+
+
+g2 = autoplot(bovespa/1000)+
+  scale_x_date(breaks = date_breaks("15 days"),
+               labels = date_format("%d/%b"))+
+  theme(axis.text.x=element_text(angle=45, hjust=1),
+        plot.title = element_text(size=10))+
+  labs(x='', y='Índice (mil pontos)',
+       title='Índice Bovespa')
+
+g2
+
+g3 = autoplot(exon)+
+  scale_x_date(breaks = date_breaks("15 days"),
+               labels = date_format("%d%b"))+
+  theme(axis.text.x= element_text(angle = 45, hjust = 1),
+        plot.title = element_text(size = 10))+
+  labs(x='', y='Exxon Mobil Corp. (diário)',
+       title = ' Preço diário')
+
+g3
+
+grid.arrange(g1,g2,g3, ncol= 1, nrow= 3,
+             bottom = 'Fonte: Yahoo Finance')
